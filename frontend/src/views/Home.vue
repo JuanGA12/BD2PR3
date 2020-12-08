@@ -2,7 +2,7 @@
   <v-container>
     <v-row justify="center">
       <v-col cols="12" justify="center" alignn="center">
-        <v-file-input v-model="images"
+        <v-file-input v-model="image"
             placeholder="Subir tu Imagen"
             label="Imagen"
             prepend-icon="mdi-camera"
@@ -21,7 +21,7 @@
               </v-chip>
             </template>
           </v-file-input>
-        <v-btn>
+        <v-btn @click="cargar">
           Enviar
         </v-btn>
       </v-col>
@@ -31,11 +31,17 @@
 
 <script>
 // @ is an alias to /src
+//import ml5 from 'ml5'
 
 export default {
   name: 'Home',
   data: ()=>({
-    images:[],
-  })
+    image:[]
+  }),
+  methods:{
+    cargar(){
+      console.log(this.image);
+    }
+  }
 }
 </script>
