@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row justify="center">
-      <v-col cols="12" justify="center" alignn="center">
+      <v-col cols="6" justify="center" align="center">
         <v-file-input v-model="image"
             placeholder="Subir tu Imagen"
             label="Imagen"
@@ -21,7 +21,7 @@
               </v-chip>
             </template>
           </v-file-input>
-        <v-btn @click="cargar">
+          <v-btn @click="cargar" justify="center" align="center">
           Enviar
         </v-btn>
       </v-col>
@@ -39,8 +39,11 @@ export default {
     image:[]
   }),
   methods:{
-    cargar(){
+    async cargar(){
       console.log(this.image);
+      console.log(this.image[0]);
+      let reponse_article = await this.$store.dispatch('Post_image',this.image);
+      console.log(reponse_article);
     }
   }
 }
