@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, request
 from rtree import index
 from flask_cors import CORS
-import os
 
 idx = index.Index()
 
