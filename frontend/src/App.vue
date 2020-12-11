@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <Header/>
-    <v-content>
+    <v-content class="grey lighten-4">
       <router-view />
     </v-content>
     <Footer/>

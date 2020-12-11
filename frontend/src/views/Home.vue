@@ -1,49 +1,128 @@
 <template>
   <v-container>
     <v-row justify="center">
-      <v-col cols="6" justify="center" align="center">
-        <v-file-input v-model="image"
-            placeholder="Subir tu Imagen"
-            label="Imagen"
-            prepend-icon="mdi-camera"
-            outlined
-            show-size
-            class="pa-3"
-            accept="image/*"
-          >   
-            <template v-slot:selection="{ text }">
-              <v-chip
-                small
-                label
-                color="primary"
-              >
-                {{ text }}  
-              </v-chip>
-            </template>
-          </v-file-input>
-          <v-btn @click="cargar" justify="center" align="center">
-          Enviar
-        </v-btn>
+      <v-col cols="7" justify="center" align="center">
+        <v-form ref="form" v-model="valid" lazy-validation>
+          <v-card color="blue lighten-3">
+            <v-container>
+              <v-col cols="12" justify="center" align="center">
+                <v-card color=#FAFAFA style=" border-radius: 15px;">
+                  <v-container>
+                    <v-file-input v-model="image" :rules="fileRules" :disabled="this.dis"
+                      placeholder="Subir tu imagen"
+                      label="Imagen"
+                      prepend-icon="mdi-camera"
+                      outlined
+                      show-size
+                      class="pa-3"
+                      accept="image/*"
+                      required>
+                        <template v-slot:selection="{ text }">
+                          <v-chip
+                            small
+                            label
+                            color="primary"
+                          >
+                            {{ text }}  
+                          </v-chip>
+                        </template>
+                    </v-file-input>
+                  </v-container>
+                </v-card>
+              </v-col>
+              <v-col cols="5" justify="center" align="center">
+                <v-card color=#FAFAFA style=" border-radius: 15px;">
+                  <v-container>
+                    <v-select v-model="Algoritmo" :items="Algoritmos" :rules="[v => !!v || 'Algoritmo es requerido']"
+                      label="Algoritmo" required  placeholder="Escoge un algoritmo"
+                      :disabled="this.dis"
+                      >
+                    </v-select>
+                  </v-container>
+                </v-card>
+              </v-col>
+            <v-col cols="4" v-if="Algoritmo == 'KNN-Sequential' || Algoritmo == 'KNN-Rtree'">
+              <v-card color=#FAFAFA style=" border-radius: 15px;">
+                <v-container>
+                  <v-text-field :disabled="this.dis"
+                    v-model="K"
+                      :rules="[v => !!v || 'Valor de K requerido']"
+                      label="Ingrese el valor de K"
+                      required
+                      placeholder="K"
+                    >
+                  </v-text-field>
+                </v-container>
+              </v-card>
+            </v-col>
+            <v-col cols="4" v-if="Algoritmo == 'Range Search'">
+              <v-card color=#FAFAFA style=" border-radius: 15px;">
+                <v-container>
+                  <v-text-field :disabled="this.dis"
+                    v-model="R"
+                      :rules="[v => !!v || 'Valor del radio requerido']"
+                      label="Ingrese el valor del radio"
+                      required
+                      placeholder="R"
+                    >
+                  </v-text-field>
+                </v-container>
+              </v-card>
+            </v-col>
+            <v-btn v-if="K > 0 || R > 0 " color="success" class="mr-4" :disabled="!valid" @click="cargar" justify="center" align="center">
+              Enviar {{this.Algoritmo}}
+            </v-btn>
+            <v-btn v-if="K > 0  || R > 0 " color="error" class="mr-4" @click="reset">
+              Limpiar formulario
+            </v-btn >
+            </v-container>
+          </v-card>
+        </v-form>
+      </v-col>
+      <v-col cols="12" v-if="Show == true">
+        Resultado obtenido usando algoritmo {{this.Algoritmo}}
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script>
-// @ is an alias to /src
-//import ml5 from 'ml5'
 
 export default {
   name: 'Home',
   data: ()=>({
-    image:[]
+    valid:true,
+    dis:false,
+    Show:false,
+    image:[
+    ],
+    Algoritmos:[
+      'KNN-Rtree',
+      'KNN-Sequential',
+      'Range Search'
+    ],
+    Algoritmo:'',
+    K:'',
+    R:'',
+    fileRules: [
+      v => !!v || 'Imagen requerida'
+    ]
   }),
   methods:{
     async cargar(){
       console.log(this.image);
-      console.log(this.image[0]);
-      let reponse_article = await this.$store.dispatch('Post_image',this.image);
+      const form = new FormData();
+      form.append('file',this.image);
+      let reponse_article = await this.$store.dispatch('Post_image',form);
+      this.Show = true,
+      this.dis = true,
+      this.valid = false,
       console.log(reponse_article);
+    },
+    reset () {
+      this.$refs.form.reset()
+      this.Show = false,
+      this.dis = false
     }
   }
 }
