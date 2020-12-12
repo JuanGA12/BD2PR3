@@ -7,10 +7,6 @@ import os
 
 idx = index.Index()
 
-##def init_rtree():
-   ##
-    
-    
 app = Flask(__name__)
 CORS(app)
 cors = CORS(app, resources={
@@ -21,10 +17,10 @@ cors = CORS(app, resources={
 )
 ''' Correrlo una vez
 def get_face_embedding(img_path):
-        a = face_recognition.load_image_file(img_path)
-        messi_encoding = face_recognition.face_encodings(a)
-        found = len(messi_encoding) > 0
-        return messi_encoding, found
+        image = face_recognition.load_image_file(img_path)
+        image_encoding = face_recognition.face_encodings(image)
+        found = len(image_encoding) > 0
+        return image_encoding, found
 
 def add_to_train_set(train_path, train_set_file, person_name):
         person_path = train_path + "/" + person_name + "/"
@@ -46,8 +42,14 @@ def create_train_set(train_path):
 create_train_set("./lfw")
 '''
 
-#def RTree()
-#indexar vectores de imagenes del dataset
+Algoritmo = str('')
+K = int(-1)
+R = int(-1)
+
+def RTree():
+    open('train_set.txt',r)
+    return "a"
+
 #def KNN_RTree(vector_carac, k)
 
 #def KNN(vector_carac, k)
@@ -57,12 +59,24 @@ create_train_set("./lfw")
 @app.route('/',methods=['GET'])
 def home():
     return ('API BD2PR')
-
-@app.route('/', methods=['POST'])##Recibe input y lo mete al r tree y devuelve el más parecido
-def insert_image():
-    uploaded_file = request.files['file']
+'''
+@app.route('/get_params', methods=['POST'])
+def Get_Params():
+    jsonData = request.get_json()
+    Algoritmo = jsonData['Algoritmo']
+    K  = jsonData['K']
+    R = jsonData['R']
+    return 'Datos enviados con éxitos'
+'''    
+@app.route('/', methods=['POST'])
+def Compare_Image():
+    IMAGE = request.files['file']
+    Algoritmo = request.form['Algoritmo']
+    K  = request.form['K']
+    R = request.form['R']
+    
     known_image = face_recognition.load_image_file("messi.jpg")
-    Image_From_Frontend = face_recognition.load_image_file(uploaded_file)
+    Image_From_Frontend = face_recognition.load_image_file(IMAGE)
 
     messi_encoding = face_recognition.face_encodings(known_image)[0]##Extrae vector caracteristico
 
@@ -73,18 +87,28 @@ def insert_image():
         for face_location in face_locations:
             top, right, bottom, left = face_location
             face_image = Image_From_Frontend[top:bottom, left:right]
+            vector_carac = face_recognition.face_encodings(face_image)[0]
+            '''   
+            if Algoritmo == "KNN-Sequential":
+                KNN(vector_carac,K)
+            elif Algoritmo == "KNN-Rtree":
+                KNN_RTree(vector_carac,K)
+            else
+                Range_Search(vector_carac,R)
+
+            '''                  
             pil_image = Image.fromarray(face_image)
             pil_image.show()
-
-        unknown_encoding = face_recognition.face_encodings(face_image)[0]   
+            results = face_recognition.compare_faces([messi_encoding], vector_carac)
+            Rpta = bool(results[0])
     except IndexError :
         Rpta = "No se detecto cara"
-
-    else:
-        results = face_recognition.compare_faces([messi_encoding], unknown_encoding)
-        Rpta = bool(results[0])
-
-    return jsonify(Rpta)
+     
+    a =  "Algoritmo"
+    b = "K"
+    c = "R"
+    return jsonify(a=Algoritmo,b=K,c=R)
+     
     #debe retornar imagen 
     
 if __name__ == '__main__':

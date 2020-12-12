@@ -13,20 +13,20 @@ export default new Vuex.Store({
       let images = state.images.concat(image);
       state.images = images;
     }
-  },
+  },  
   actions: {
     async Post_image({commit},image){
       try{
         let response = await Api().post('/',image);
-        console.log(response);
+        //console.log(response);
         let to_add = response.data;
         commit('ADD_IMAGE',to_add);
         return to_add;
-      }
-      catch{
+      }catch{
         return{error: "Hubo un error al subir la imagen"}
       }
     }
+
   },
   modules: {
   }

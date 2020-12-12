@@ -70,7 +70,7 @@
               </v-card>
             </v-col>
             <v-btn v-if="K > 0 || R > 0 " color="success" class="mr-4" :disabled="!valid" @click="cargar" justify="center" align="center">
-              Enviar {{this.Algoritmo}}
+              Realizar {{this.Algoritmo}}
             </v-btn>
             <v-btn v-if="K > 0  || R > 0 " color="error" class="mr-4" @click="reset">
               Limpiar formulario
@@ -79,7 +79,7 @@
           </v-card>
         </v-form>
       </v-col>
-      <v-col cols="12" v-if="Show == true">
+      <v-col cols="12" v-if="Show == true && this.next == true">
         Resultado obtenido usando algoritmo {{this.Algoritmo}}
       </v-col>
     </v-row>
@@ -106,23 +106,44 @@ export default {
     R:'',
     fileRules: [
       v => !!v || 'Imagen requerida'
-    ]
+    ],
+    response:{},
+    next:false
   }),
   methods:{
     async cargar(){
-      console.log(this.image);
+      //console.log(this.image);
       const form = new FormData();
       form.append('file',this.image);
-      let reponse_article = await this.$store.dispatch('Post_image',form);
+      form.append('Algoritmo',this.Algoritmo);
+      form.append('K',this.K);
+      form.append('R',this.R);
+
+      if(this.K == ""){
+        this.K = 0;
+      }else{
+        this.R = 0;
+      }
+
+      this.response = await this.$store.dispatch('Post_image',form);
+      if(this.response.error){
+        alert(this.response.error)
+      }else{
+        alert('Datos enviados correctamente')
+        this.next = true;
+      }  
       this.Show = true,
       this.dis = true,
-      this.valid = false,
-      console.log(reponse_article);
+      this.valid = false;
+      console.log(this.response);
+    
     },
     reset () {
       this.$refs.form.reset()
       this.Show = false,
       this.dis = false
+      this.K = ''
+      this.R = ''
     }
   }
 }
