@@ -3,7 +3,7 @@
     <v-row justify="center">
       <v-col cols="7" justify="center" align="center">
         <v-form ref="form" v-model="valid" lazy-validation>
-          <v-card color="blue lighten-3">
+          <v-card elevation="10" color="blue lighten-3" style=" border-radius: 10px;">
             <v-container>
               <v-col cols="12" justify="center" align="center">
                 <v-card color=#FAFAFA style=" border-radius: 15px;">
@@ -55,7 +55,7 @@
                 </v-container>
               </v-card>
             </v-col>
-            <v-col cols="4" v-if="Algoritmo == 'Range Search'">
+            <v-col cols="4" v-if="Algoritmo == 'Range Search-RTree'">
               <v-card color=#FAFAFA style=" border-radius: 15px;">
                 <v-container>
                   <v-text-field :disabled="this.dis"
@@ -99,7 +99,7 @@ export default {
     Algoritmos:[
       'KNN-Rtree',
       'KNN-Sequential',
-      'Range Search'
+      'Range Search-RTree'
     ],
     Algoritmo:'',
     K:'',
