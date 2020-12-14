@@ -23,7 +23,7 @@ export default new Vuex.Store({
         commit('ADD_IMAGE',to_add);
         return to_add;
       }catch{
-        return{error: "Hubo un error al subir la imagen"}
+        return{error: "Hubo un error al subir la imagen o no se detecto cara"}
       }
     }
 

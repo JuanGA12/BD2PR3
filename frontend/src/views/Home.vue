@@ -69,6 +69,37 @@
                 </v-container>
               </v-card>
             </v-col>
+            <v-col cols="12" v-if="R > 0 || K > 0">
+              <v-card color=#FAFAFA style=" border-radius: 15px;">
+                <v-container>
+                    <v-card-title class="justify-center">
+                      <span class="body-2">Cantidad de datos a utilizar</span>
+                    </v-card-title>
+                    <v-slider 
+                      :disabled="this.dis"
+                      v-model="P"
+                      :color="color"
+                      :tick-labels="Valores_p"
+                      track-color="blue lighten-3"
+                      :max="7"
+                      step="1"
+                      ticks="always"
+                      tick-size="6"
+                    >
+                      <template v-slot:prepend>
+                        <v-icon color="red" @click="decrement">
+                          mdi-minus
+                        </v-icon>
+                      </template>
+                      <template v-slot:append>
+                        <v-icon color="green" @click="increment">
+                          mdi-plus
+                        </v-icon>
+                      </template>
+                    </v-slider>
+                </v-container>
+              </v-card>
+            </v-col>
             <v-btn v-if="K > 0 || R > 0 " color="success" class="mr-4" :disabled="!valid" @click="cargar" justify="center" align="center">
               Realizar {{this.Algoritmo}}
             </v-btn>
@@ -79,9 +110,32 @@
           </v-card>
         </v-form>
       </v-col>
-      <v-col cols="12" v-if="Show == true && this.next == true">
-        Resultado obtenido usando algoritmo {{this.Algoritmo}}
+      <v-col cols="12">
+        <v-divider color="black"/>
       </v-col>
+      <div v-if="Show == true && this.next == true">
+        <h1 class="mt-3 mb-3">
+          Resultado obtenido usando algoritmo {{this.Algoritmo}}
+          <v-col justify="center" align="center" cols="12" v-for="(r,index) in response" :key="index">
+          <v-card >
+            <v-card-title class="justify-center">
+              {{r[0][0][0]}}
+            </v-card-title>
+            <img v-bind:src="'data:image/png;base64,'+r[1]" />
+            <v-card-subtitle> 
+              <v-col cols="12" v-if="K > 0">
+                Apareció en {{r[0][0][1]}} de {{K}}
+                Tiempo de ejecucion: {{r[0][1]}} segundos
+              </v-col>
+              <v-col cols="12" v-if="R > 0">
+                Apareció {{r[0][0][1]}} veces usando radio {{R}}
+                Tiempo de ejecucion: {{r[0][1]}} segundos
+              </v-col>
+            </v-card-subtitle>
+          </v-card>  
+        </v-col> 
+        </h1>  
+      </div>  
     </v-row>
   </v-container>
 </template>
@@ -104,13 +158,37 @@ export default {
     Algoritmo:'',
     K:'',
     R:'',
+    Porcentaje:'',
+    P:0,
     fileRules: [
       v => !!v || 'Imagen requerida'
     ],
-    response:{},
-    next:false
+    response:[],
+    next:false,
+    Valores_p: [
+      '100',
+      '200',
+      '400',
+      '800',
+      '1600',
+      '3200',
+      '6400',
+      '13171'
+    ],
   }),
+  computed:{
+    color () {
+        if (this.P <4) return 'red'
+        return 'green'
+      },
+  },
   methods:{
+    decrement () {
+      this.P--
+    },
+    increment () {
+      this.P++
+    },
     async cargar(){
       //console.log(this.image);
       const form = new FormData();
@@ -118,6 +196,37 @@ export default {
       form.append('Algoritmo',this.Algoritmo);
       form.append('K',this.K);
       form.append('R',this.R);
+      
+      switch(this.P){
+        case 0:
+          this.P = 100;
+          break;
+        case 1:
+          this.P = 200;
+          break;
+        case 2:
+          this.P = 400;
+          break;
+        case 3:
+          this.P = 800; 
+          break;     
+        case 4:
+          this.P = 1600;
+          break;
+        case 5:
+          this.P = 3200;
+          break;
+        case 6:
+          this.P = 6400;
+          break;
+        case 7:
+          this.P = 13171;
+          break;
+        default:
+          this.P = 0;
+          break;
+      }
+      form.append('P',this.P);
 
       if(this.K == ""){
         this.K = 0;
@@ -135,8 +244,13 @@ export default {
       this.Show = true,
       this.dis = true,
       this.valid = false;
-      console.log(this.response);
-    
+      
+      for (var i = 0; i < (this.response.length); i++) {
+        this.response[i][0][0][0] = this.response[i][0][0][0].replace("_", " ");
+        this.response[i][0][1] = parseFloat(this.response[i][0][1]).toFixed(4)
+        console.log(this.response[i][0][0][0])
+      }
+      return this.response
     },
     reset () {
       this.$refs.form.reset()
