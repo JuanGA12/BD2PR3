@@ -2,7 +2,7 @@
 node_modules
 /dist
 .*
-
+.gitignore
 # local env files
 .env.local
 .env.*.local
