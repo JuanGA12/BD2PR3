@@ -75,8 +75,6 @@ def Compare_Image():
         list_images.append( ( rpta[i], encoded_image.decode('utf-8')) )
         os.remove(str(i)+'.png')    
 
-    print(rpta)
-
     return jsonify(list_images)
     
 if __name__ == '__main__':
