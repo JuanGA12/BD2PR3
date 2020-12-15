@@ -133,7 +133,7 @@
       <v-col cols="12">
         <v-divider color="black"/>
       </v-col>
-      <div v-if="Show == true && this.next == true">
+      <div v-if="Show == true && this.next == true && this.response.length > 0">
         <h1 class="mt-3 mb-3">
           Resultado obtenido usando algoritmo {{this.Algoritmo}} con {{this.J}} datos
           <v-carousel cycle show-arrows-on-hover hide-delimiter-background>
@@ -148,7 +148,7 @@
                     {{r[0][0][0]}}
                     </h1>
                   </v-card-title>
-                  <img v-bind:src="'data:image/png;base64,'+r[1]" />
+                  <v-img v-bind:src="'data:image/png;base64,'+r[1]" max-height="200" max-width="200" />
                   <v-col cols="5">
                     <v-divider color="white"/>
                     <v-divider color="white"/>
@@ -177,6 +177,9 @@
             </v-carousel-item>
           </v-carousel>      
         </h1>  
+      </div>
+      <div v-else-if="Show == true && this.next == true && this.response.length === 0">
+        IMAGEN ENVIADA NO CONTIENE UNA CARA
       </div>  
     </v-row>
   </v-container>
@@ -293,6 +296,7 @@ export default {
         this.response[i][0][0][0] = this.response[i][0][0][0].replace("_", " ");
         this.response[i][0][1] = parseFloat(this.response[i][0][1]).toFixed(4)
       }
+      console.log(this.response)
       return this.response
     },
     reset () {
